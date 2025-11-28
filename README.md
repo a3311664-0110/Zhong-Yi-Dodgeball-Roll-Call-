@@ -1,9 +1,23 @@
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <!-- 優化手機顯示：禁止縮放、適配瀏海螢幕 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>忠義國小 躲避球隊點名表</title>
+    
+    <!-- PWA 設定: 讓網頁變身 App -->
+    <title>忠義點名</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="忠義點名">
+    <meta name="theme-color" content="#f5f5f0">
+
+    <!-- 自動產生的 App 圖示 (Base64 SVG) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzdmMWQxZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCI+5b+g576pPC90ZXh0Pjwvc3ZnPg==">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzdmMWQxZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIyMDAiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iYm9sZCI+5b+g576pPC90ZXh0Pjwvc3ZnPg==">
+
+    <!-- Web App Manifest (Android 支援) -->
+    <link rel="manifest" href='data:application/manifest+json;base64,eyJuYW1lIjoi5b+g576p5ZyL5bCP6bqy6YG/55CD6bOe5ZCN5ZCNIiwic2hvcnRfbmFtZSI6IuW/oOe+qeWQjeZLmSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZjVmNWYwIiwidGhlbWVfY29sb3IiOiIjZjVmNWYwIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMmR5QjRiV3h1Y3owaWFIUjBjRG92TDIzZDNkeTVMek11YM01a1l5OTBheTl6ZG1jOUlqQXRNQ0ExTVRJMU1USWlQanh5WldOMElIZHBkSFJvUFNJMU1USWlJR2hsYVdkMGREMHlOVEl5SWlabWFXeHNQU0lqTjJZeFpERmtJaTh2UGp4MFpYaDBJRGhmTW0wOUlpVTlKQ0lnZVR0aU5UQlRJaUJrYjIxYXJtRnVZMjVoYldWeVlYTmxiR2x1WlQwaWJXbGt1R3hsSWlCMFpYaDBMV0Z1WTJodmNqMGlid2xrWkd4bElpQm1hV3hzUFNKM2FHbDBaU0lnWm05dWRDMXphWHBsUFNJeU1EQWlJR1p2Ym5RdFptRnRhV3g1UFNJellXNXpMWE5sY21sbUlRlG1ablF0ZDJWcFoyaDBQU0ppYjJ4a0lpRitXYitnNTc2cUENQzlZM0owUGp3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifV19'>
     
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -236,24 +250,24 @@
                     let importCount = 0;
 
                     rows.forEach((row, index) => {
-                        if (index === 0 && (row.includes("姓名") || row.includes("Name"))) return;
+                        // 跳過標題列
+                        if (index === 0 && (row.includes("姓名") || row.includes("Name") || row.includes("班級") || row.includes("Class"))) return;
+                        
                         const cols = row.split(',').map(c => c.trim());
+                        // CSV 格式：第一欄班級, 第二欄姓名, 第三欄性別
                         if (cols.length < 2) return;
 
-                        let name, genderStr, className;
-                        if (cols[0].includes('班')) {
-                            className = cols[0]; name = cols[1]; genderStr = cols[2];
-                        } else {
-                            name = cols[0]; genderStr = cols[1]; className = cols[2]; 
-                        }
+                        const className = cols[0] || "未分類"; // 第一欄：班級
+                        const name = cols[1];                // 第二欄：姓名
+                        const genderStr = cols[2];           // 第三欄：性別
 
                         if (!name) return;
+
                         let gender = 'M';
                         if (genderStr) {
                             const g = genderStr.toUpperCase();
                             if (g === 'F' || g === '女' || g === 'GIRL') gender = 'F';
                         }
-                        if (!className) className = "未分類";
 
                         if (!students.some(s => s.name === name) && !newStudents.some(s => s.name === name)) {
                             newStudents.push({ name, gender, class: className });
@@ -602,8 +616,8 @@
                                     
                                     return (
                                         <div key={student.name} onClick={() => toggleAttendance(student.name)} className={`
-                                            relative group flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all duration-200 select-none h-32 touch-manipulation
-                                            ${isEditMode ? 'cursor-default' : 'active:scale-95'}
+                                            relative group flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all duration-200 select-none touch-manipulation
+                                            ${isEditMode ? 'cursor-default h-auto min-h-[8rem]' : 'active:scale-95 h-32'}
                                             ${!isEditMode && isPresent ? 'bg-white border-[#7f1d1d] shadow-md ring-1 ring-[#7f1d1d]/20' : 'bg-white border-[#dcdcdc] active:bg-stone-50'}
                                         `}>
                                             <div className={`absolute top-2 left-3 text-[10px] font-bold opacity-40 ${isMale ? 'text-blue-800' : 'text-red-800'}`}>{isMale ? 'BOY' : 'GIRL'}</div>
@@ -620,9 +634,9 @@
                                                 </span>
                                             )}
                                             {isEditMode && (
-                                                <div className="absolute inset-0 bg-white/90 backdrop-blur-[1px] flex items-center justify-center gap-4 rounded-xl border-2 border-dashed border-stone-300 z-10">
-                                                    <button onClick={(e) => { e.stopPropagation(); toggleStudentGender(student); }} className={`p-3 rounded-full text-xs font-bold border shadow-sm active:scale-90 transition-transform ${isMale ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-red-50 text-red-600 border-red-200'}`} title="切換性別">{isMale ? "男" : "女"}</button>
-                                                    <button onClick={(e) => { e.stopPropagation(); removeStudent(student.name); }} className="p-3 bg-white border border-stone-200 text-stone-500 hover:text-red-600 active:bg-red-50 active:border-red-200 rounded-full shadow-sm active:scale-90 transition-all" title="刪除"><Trash2 size={18} /></button>
+                                                <div className="flex gap-2 mt-2 z-10 w-full justify-center">
+                                                    <button onClick={(e) => { e.stopPropagation(); toggleStudentGender(student); }} className={`flex-1 py-1.5 rounded-md text-xs font-bold border shadow-sm active:scale-90 transition-transform ${isMale ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-red-50 text-red-600 border-red-200'}`} title="切換性別">{isMale ? "男" : "女"}</button>
+                                                    <button onClick={(e) => { e.stopPropagation(); removeStudent(student.name); }} className="flex-1 py-1.5 bg-white border border-stone-200 text-stone-500 hover:text-red-600 active:bg-red-50 active:border-red-200 rounded-md shadow-sm active:scale-90 transition-all flex items-center justify-center" title="刪除"><Trash2 size={16} /></button>
                                                 </div>
                                             )}
                                         </div>
